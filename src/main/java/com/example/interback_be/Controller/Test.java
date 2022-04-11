@@ -14,6 +14,8 @@ public class Test {
     @ResponseBody
     @GetMapping("/test")
     public String test(){
+
+        log.info("qweqwe");
         return "qwe";
     }
 }
