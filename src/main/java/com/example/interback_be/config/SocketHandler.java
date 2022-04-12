@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -23,7 +24,6 @@ public class SocketHandler extends TextWebSocketHandler {
 
     // 연결된 세션 저장.
     private List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
-    private List<User> userList = new ArrayList<>();
 
     // socket cl
     @Override
@@ -38,21 +38,28 @@ public class SocketHandler extends TextWebSocketHandler {
 
         String msg = message.getPayload();
         JSONObject ob = jsonToObjectParser(msg);
-
+        log.info(ob.toJSONString());
         switch (ob.get("type").toString()) {
-            case "joinCaller":
-                log.info(ob.toJSONString());
-                userList.add(new User((Long) ob.get("callee"), (String)ob.get("name"), (JSONObject) ob.get("signal")));
-                log.info(String.valueOf(userList.size()));
-                break;
-
-            case "startConsulting":
-                log.info("Qweqwe");
+            case "caller":
 
                 for (WebSocketSession webSocketSession : sessions) {
-                    if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
-                        //webSocketSession.sendMessage(msg);
-                    }
+                    JSONObject data = new JSONObject();
+                    data.put("type", "caller");
+                    data.put("from", ob.get("from"));
+                    data.put("signal", ob.get("signal"));
+
+                    webSocketSession.sendMessage(new TextMessage(data.toJSONString()));
+                }
+                break;
+
+            case "answerCall":
+
+                for (WebSocketSession webSocketSession : sessions) {
+                    JSONObject data = new JSONObject();
+                    data.put("type", "acceptCall");
+                    data.put("signal", ob.get("signal"));
+
+                    webSocketSession.sendMessage(new TextMessage(data.toJSONString()));
                 }
                 break;
 
