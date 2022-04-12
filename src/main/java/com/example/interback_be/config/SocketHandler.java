@@ -1,6 +1,10 @@
 package com.example.interback_be.config;
 
+import com.example.interback_be.DTO.User;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -9,6 +13,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -17,8 +22,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SocketHandler extends TextWebSocketHandler {
 
     // 연결된 세션 저장.
-    List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
-
+    private List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+    private List<User> userList = new ArrayList<>();
 
     // socket cl
     @Override
@@ -30,11 +35,46 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message)
             throws InterruptedException, IOException {
-        for (WebSocketSession webSocketSession : sessions) {
-            if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
-                webSocketSession.sendMessage(message);
-            }
+
+        String msg = message.getPayload();
+        JSONObject ob = jsonToObjectParser(msg);
+
+        switch (ob.get("type").toString()) {
+            case "joinCaller":
+                log.info(ob.toJSONString());
+                userList.add(new User((Long) ob.get("callee"), (String)ob.get("name"), (JSONObject) ob.get("signal")));
+                log.info(String.valueOf(userList.size()));
+                break;
+
+            case "startConsulting":
+                log.info("Qweqwe");
+
+                for (WebSocketSession webSocketSession : sessions) {
+                    if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
+                        //webSocketSession.sendMessage(msg);
+                    }
+                }
+                break;
+
+            default:
+
+                log.warn(ob.toJSONString());
+                break;
         }
+
+
+    }
+
+    // json parser
+    private static JSONObject jsonToObjectParser(String jsonStr) {
+        JSONParser parser = new JSONParser();
+        JSONObject obj = null;
+        try {
+            obj = (JSONObject) parser.parse(jsonStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return obj;
     }
 
 }
