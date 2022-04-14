@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class InterbackBeApplication {
 
 	public static void main(String[] args) {
-		log.warn("2222");
 		SpringApplication.run(InterbackBeApplication.class, args);
 	}
 

@@ -40,26 +40,74 @@ public class SocketHandler extends TextWebSocketHandler {
         JSONObject ob = jsonToObjectParser(msg);
         log.info(ob.toJSONString());
         switch (ob.get("type").toString()) {
+
+            case "join room":
+
+                break;
+
+            case "sending signal":
+                for (WebSocketSession webSocketSession : sessions) {
+
+                    if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
+                        // caller의 정보를 json 소켓으로 쏴준다.
+                        JSONObject data = new JSONObject();
+                        data.put("type", "user joined");
+                        data.put("callerID", ob.get("callerID"));
+                        data.put("signal", ob.get("signal"));
+
+                        webSocketSession.sendMessage(new TextMessage(data.toJSONString()));
+
+                    }
+                }
+
+                break;
+
+            case "returning signal":
+
+                for (WebSocketSession webSocketSession : sessions) {
+
+                    if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
+                        // caller의 정보를 json 소켓으로 쏴준다.
+                        JSONObject data = new JSONObject();
+                        data.put("type", "receiving returned signal");
+                        data.put("callerID", ob.get("callerID"));
+                        data.put("signal", ob.get("signal"));
+
+                        webSocketSession.sendMessage(new TextMessage(data.toJSONString()));
+
+                    }
+                }
+                break;
+
             case "caller":
 
                 for (WebSocketSession webSocketSession : sessions) {
-                    JSONObject data = new JSONObject();
-                    data.put("type", "caller");
-                    data.put("from", ob.get("from"));
-                    data.put("signal", ob.get("signal"));
 
-                    webSocketSession.sendMessage(new TextMessage(data.toJSONString()));
+                    if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
+
+                        // caller의 정보를 json 소켓으로 쏴준다.
+                        JSONObject data = new JSONObject();
+                        data.put("type", "caller");
+                        data.put("from", ob.get("from"));
+                        data.put("signal", ob.get("signal"));
+
+                        webSocketSession.sendMessage(new TextMessage(data.toJSONString()));
+                    }
                 }
                 break;
 
             case "answerCall":
 
                 for (WebSocketSession webSocketSession : sessions) {
-                    JSONObject data = new JSONObject();
-                    data.put("type", "acceptCall");
-                    data.put("signal", ob.get("signal"));
+                    if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
 
-                    webSocketSession.sendMessage(new TextMessage(data.toJSONString()));
+                        //
+                        JSONObject data = new JSONObject();
+                        data.put("type", "acceptCall");
+                        data.put("signal", ob.get("signal"));
+
+                        webSocketSession.sendMessage(new TextMessage(data.toJSONString()));
+                    }
                 }
                 break;
 
