@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Slf4j
-@Component
+//@Component
 public class SocketHandler extends TextWebSocketHandler {
 
     // 연결된 세션 저장.
