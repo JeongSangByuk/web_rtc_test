@@ -28,7 +28,6 @@ public class VideoRoomController {
 
         // caller의 정보를 json 소켓으로 쏴준다.
         JSONObject data = new JSONObject();
-        data.put("type", "caller");
         data.put("from", ob.get("from"));
         data.put("signal", ob.get("signal"));
 
@@ -44,6 +43,7 @@ public class VideoRoomController {
         // caller의 정보를 json 소켓으로 쏴준다.
         JSONObject data = new JSONObject();
         data.put("signal", ob.get("signal"));
+        data.put("from", ob.get("from"));
 
         return data;
     }
