@@ -9,6 +9,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,8 +27,8 @@ import java.util.Map;
 public class VideoRoomController {
 
     // 테스트용 세션 리스트.
-    private final ArrayList<TestSession> sessionIdList = new ArrayList<>();
-
+    private final ArrayList<TestSession> sessionIdList;
+    private final SimpMessagingTemplate template;
 
     // 실시간으로 들어온 세션 감지하여 전체 세션 리스트 반환
     @MessageMapping("/video/joined-room-info")
@@ -40,6 +41,7 @@ public class VideoRoomController {
         return sessionIdList;
     }
 
+    // caller의 정보를 다른 callee들에게 쏴준다.
     @MessageMapping("/video/caller-info")
     @SendTo("/sub/video/caller-info")
     private Map<String, Object> caller(JSONObject ob){
@@ -55,6 +57,7 @@ public class VideoRoomController {
         return data;
     }
 
+    // caller와 callee의 signaling을 위해 callee 정보를 쏴준다.
     @MessageMapping("/video/callee-info")
     @SendTo("/sub/video/callee-info")
     private Map<String, Object> answerCall(JSONObject ob){
@@ -80,6 +83,10 @@ public class VideoRoomController {
 
         // 세션 close인 경우 세션 리스트에서 빼준다.
         sessionIdList.removeIf(s -> s.getSessionId().equals(event.getSessionId()));
+
+        //종료 세션 id 전달.
+        //template.convertAndSend();
+
     }
 
 }
