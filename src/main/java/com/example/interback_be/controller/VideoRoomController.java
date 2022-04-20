@@ -81,11 +81,20 @@ public class VideoRoomController {
     @EventListener
     private void handleSessionDisconnect(SessionDisconnectEvent event) {
 
+        String removedID = "";
+        for (TestSession session:sessionIdList) {
+            if(session.getSessionId().equals(event.getSessionId())){
+                removedID = session.getId();
+                sessionIdList.remove(session);
+                break;
+            }
+        }
+
         // 세션 close인 경우 세션 리스트에서 빼준다.
-        sessionIdList.removeIf(s -> s.getSessionId().equals(event.getSessionId()));
+        //sessionIdList.removeIf(s -> s.getSessionId().equals(event.getSessionId()));
 
         //종료 세션 id 전달.
-        //template.convertAndSend();
+        template.convertAndSend("/sub/video/close-session", removedID);
 
     }
 
