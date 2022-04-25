@@ -1,0 +1,10 @@
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+.gradle
+
+#ignore properties file
+application-key.properties
