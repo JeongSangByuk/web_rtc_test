@@ -1,6 +1,7 @@
 package com.example.interback_be.controller;
 
 import com.example.interback_be.dto.TestSession;
+import com.example.interback_be.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -23,7 +24,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8000" , allowCredentials = "true")
+@CrossOrigin(origins = Constants.API_URL, allowCredentials = "true")
 public class VideoRoomController {
 
     // 테스트용 세션 리스트.
