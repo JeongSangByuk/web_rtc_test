@@ -8,3 +8,4 @@ gen
 
 #ignore properties file
 application-key.properties
+keystore.p12
