@@ -30,10 +30,9 @@ public class Test {
     public String audioTest(@RequestBody Map<String, String> map) throws IOException {
 
         String base64Audio = map.get("base64data");
-        log.info(base64Audio);
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] decodedByte = decoder.decode(base64Audio.split(",")[1]);
-        FileOutputStream fos = new FileOutputStream("MyAudio.webm");
+        FileOutputStream fos = new FileOutputStream("MyAudio.wav");
         fos.write(decodedByte);
         fos.close();
 

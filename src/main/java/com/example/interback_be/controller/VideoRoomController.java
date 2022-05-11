@@ -34,10 +34,10 @@ public class VideoRoomController {
     // 실시간으로 들어온 세션 감지하여 전체 세션 리스트 반환
     @MessageMapping("/video/joined-room-info")
     @SendTo("/sub/video/joined-room-info")
-    private ArrayList<TestSession> joinRoom(@Header("simpSessionId") String sessionId, JSONObject ob){
+    private ArrayList<TestSession> joinRoom(@Header("simpSessionId") String sessionId, JSONObject ob) {
 
         // 현재 들어온 세션 저장.
-        sessionIdList.add(new TestSession((String) ob.get("from"),sessionId));
+        sessionIdList.add(new TestSession((String) ob.get("from"), sessionId));
 
         return sessionIdList;
     }
@@ -45,13 +45,13 @@ public class VideoRoomController {
     // caller의 정보를 다른 callee들에게 쏴준다.
     @MessageMapping("/video/caller-info")
     @SendTo("/sub/video/caller-info")
-    private Map<String, Object> caller(JSONObject ob){
+    private Map<String, Object> caller(JSONObject ob) {
 
         log.info(ob.toJSONString());
 
         // caller의 정보를 소켓으로 쏴준다.
-        Map<String, Object> data= new HashMap<>();
-        data.put("toCall",ob.get("toCall"));
+        Map<String, Object> data = new HashMap<>();
+        data.put("toCall", ob.get("toCall"));
         data.put("from", ob.get("from"));
         data.put("signal", ob.get("signal"));
 
@@ -61,7 +61,7 @@ public class VideoRoomController {
     // caller와 callee의 signaling을 위해 callee 정보를 쏴준다.
     @MessageMapping("/video/callee-info")
     @SendTo("/sub/video/callee-info")
-    private Map<String, Object> answerCall(JSONObject ob){
+    private Map<String, Object> answerCall(JSONObject ob) {
 
         log.info(ob.toJSONString());
 
@@ -85,8 +85,8 @@ public class VideoRoomController {
         String removedID = "";
 
         // close된 세션의 id 저장.
-        for (TestSession session:sessionIdList) {
-            if(session.getSessionId().equals(event.getSessionId())){
+        for (TestSession session : sessionIdList) {
+            if (session.getSessionId().equals(event.getSessionId())) {
                 removedID = session.getId();
                 sessionIdList.remove(session);
                 break;
