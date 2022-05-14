@@ -3,7 +3,11 @@ package com.example.interback_be.controller;
 import com.example.interback_be.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,13 +33,13 @@ public class Test {
     @PostMapping("/audio-test")
     public String audioTest(@RequestBody Map<String, String> map) throws IOException {
 
-        String base64Audio = map.get("base64data");
-        Base64.Decoder decoder = Base64.getDecoder();
-        byte[] decodedByte = decoder.decode(base64Audio.split(",")[1]);
-        FileOutputStream fos = new FileOutputStream("MyAudio.wav");
-        fos.write(decodedByte);
-        fos.close();
 
-        return "aw";
+        String base64Audio = map.get("base64data");
+
+        HttpHeaders headers = new HttpHeaders();
+        RestTemplate restTemplate = new RestTemplate();
+        String resultMessage = restTemplate.postForObject(Constants.ML_API_URL + "/audio-sentiment", new HttpEntity<>(map, headers), String.class);
+
+        return resultMessage;
     }
 }
