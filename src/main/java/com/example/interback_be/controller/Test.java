@@ -25,8 +25,7 @@ public class Test {
     @GetMapping("/test")
     public String test(){
 
-        log.info("qweqwe");
-        return "qwe";
+        log.info("qweqwe");        return "qwe";
     }
 
     @ResponseBody
