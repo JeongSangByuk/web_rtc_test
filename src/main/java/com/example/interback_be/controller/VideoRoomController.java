@@ -5,18 +5,23 @@ import com.example.interback_be.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,6 +77,25 @@ public class VideoRoomController {
         data.put("to", ob.get("to"));
 
         return data;
+    }
+
+    @MessageMapping("/video/audio-sentiment")
+    @SendTo("/sub/video/audio-sentiment")
+    public Map<String, Object> audioTest(@RequestBody Map<String, String> map) throws ParseException {
+
+        HttpHeaders headers = new HttpHeaders();
+        RestTemplate restTemplate = new RestTemplate();
+        String resultMessage = restTemplate.postForObject(Constants.ML_API_URL + "/audio-sentiment", new HttpEntity<>(map, headers), String.class);
+
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(resultMessage);
+        JSONObject jsonObj = (JSONObject) obj;
+
+        // {from : senderId, }
+        Map<String, Object> returnData = new HashMap<>();
+        returnData.put("from", map.get("from"));
+        returnData.put("resultOfAudioSentiment", jsonObj);
+        return returnData;
     }
 
     @EventListener

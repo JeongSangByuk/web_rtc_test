@@ -29,18 +29,4 @@ public class Test {
         log.info("qweqwe");
         return "qwe";
     }
-
-    @ResponseBody
-    @PostMapping("/audio-test")
-    public String audioTest(@RequestBody Map<String, String> map) throws IOException {
-
-
-        String base64Audio = map.get("base64data");
-
-        HttpHeaders headers = new HttpHeaders();
-        RestTemplate restTemplate = new RestTemplate();
-        String resultMessage = restTemplate.postForObject(Constants.ML_API_URL + "/audio-sentiment", new HttpEntity<>(map, headers), String.class);
-
-        return resultMessage;
-    }
 }
