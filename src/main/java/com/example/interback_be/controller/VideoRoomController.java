@@ -47,6 +47,14 @@ public class VideoRoomController {
         return sessionIdList;
     }
 
+    @ResponseBody
+    @GetMapping("/test")
+    public String test(){
+
+        log.info("qweqwe");
+        return "qwe";
+    }
+
     // caller의 정보를 다른 callee들에게 쏴준다.
     @MessageMapping("/video/caller-info")
     @SendTo("/sub/video/caller-info")
@@ -81,7 +89,7 @@ public class VideoRoomController {
 
     @MessageMapping("/video/audio-sentiment")
     @SendTo("/sub/video/audio-sentiment")
-    public Map<String, Object> audioTest(@RequestBody Map<String, String> map) throws ParseException {
+    public Map<String, Object> getAudioSentiment(@RequestBody Map<String, String> map) throws ParseException {
 
         HttpHeaders headers = new HttpHeaders();
         RestTemplate restTemplate = new RestTemplate();
@@ -96,6 +104,13 @@ public class VideoRoomController {
         returnData.put("from", map.get("from"));
         returnData.put("resultOfAudioSentiment", jsonObj);
         return returnData;
+    }
+
+    @MessageMapping("/video/chat")
+    @SendTo("/sub/video/chat")
+    public Map<String, String> listenAndSendChat(@RequestBody Map<String, String> map) throws ParseException {
+
+        return map;
     }
 
     @EventListener

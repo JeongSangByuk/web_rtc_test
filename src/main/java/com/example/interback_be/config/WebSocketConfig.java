@@ -16,8 +16,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
         // stomp 최대 버퍼 사이즈를 늘리기 위한 설정
-        registry.setMessageSizeLimit(500 * 1024);
-        registry.setSendBufferSizeLimit(1024 * 1024);
+        registry.setMessageSizeLimit(50000 * 1024);
+        registry.setSendBufferSizeLimit(10240 * 1024);
         registry.setSendTimeLimit(20000);
     }
 

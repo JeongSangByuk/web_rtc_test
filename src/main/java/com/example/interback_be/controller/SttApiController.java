@@ -3,9 +3,13 @@ package com.example.interback_be.controller;
 import com.example.interback_be.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +19,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -26,8 +31,9 @@ public class SttApiController {
     @Autowired
     ResourceLoader resourceLoader;
 
-    @PostMapping("/stt")
-    public String sttApi(@RequestBody Map<String, String> map){
+    @MessageMapping("/video/stt")
+    @SendTo("/sub/video/stt")
+    public Map<String, Object> sttApi(@RequestBody Map<String, String> map) throws Exception {
         String clientId = "91kzy8eps2";             // Application Client ID";
         String clientSecret = "I6kLxePix9QW5exWROiQDuQzDU2oy0UgYlCn4vIH";     // Application Client Secret";
 
@@ -80,7 +86,7 @@ public class SttApiController {
                     System.out.println("error!!!!!!! responseCode= " + responseCode);
                     br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-                    return "error!!!!!!! responseCode= ";
+                    throw new Exception(String.valueOf(responseCode));
                 }
                 String inputLine;
 
@@ -91,22 +97,29 @@ public class SttApiController {
                     }
                     br.close();
                     System.out.println(response.toString());
-                    return response.toString();
+
+                    JSONParser parser = new JSONParser();
+                    Object obj = parser.parse(response.toString());
+                    JSONObject returnData = (JSONObject) obj;
+                    returnData.put("from", map.get("from"));
+
+                    return returnData;
                 } else {
                     System.out.println("error !!!");
-                    return "error !!!";
+                    throw new Exception();
                 }
             } catch (Exception e) {
                 System.out.println(e);
-                return e.toString();
+                throw new Exception(e);
             }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return e.toString();
+            throw new Exception(e);
         } catch (IOException e) {
             e.printStackTrace();
-            return e.toString();
+            throw new Exception(e);
+
         }
 
     }
